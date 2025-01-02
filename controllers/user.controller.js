@@ -47,10 +47,20 @@ const loginUser =  async(req, res) => {
 
     const token = await user.generateAuthToken();
 
+    //adding token as cookie as well(if authenticating using without header 'authrorization'
+    res.cookie('token', token);
+
     res.status(200).json({ token, user});
+}
+
+const getUserProfile = async(req, res) => {
+    const user = req.user;
+
+    res.status(200).json({ user });
 }
 
 export default {
     registerUser,
-    loginUser
+    loginUser,
+    getUserProfile
 }
