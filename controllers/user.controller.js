@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import userModel from "../models/user.model.js";
 import userService from "../services/user.service.js";
+import blacklistTokenModel from "../models/blacklistToken.model.js";
 
 const registerUser = async (req, res) => {
     const errors = validationResult(req);   //if separate middleware is there, this can be handled there only.
@@ -59,8 +60,19 @@ const getUserProfile = async(req, res) => {
     res.status(200).json({ user });
 }
 
+const logoutUser = async(req, res) => {
+    res.clearCookie('token');
+
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+
+    await blacklistTokenModel.create({ token});     //still need to update authUser mw to detect blacklisted token as user can use it.
+
+    res.status(200).json({ message: "Logged out"});
+}
+
 export default {
     registerUser,
     loginUser,
-    getUserProfile
+    getUserProfile,
+    logoutUser
 }
