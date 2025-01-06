@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import userModel from "../models/user.model.js";
-import userService from "../services/user.service.js";
+import userService from "../services/user.services.js";
 import blacklistTokenModel from "../models/blacklistToken.model.js";
 
 const registerUser = async (req, res) => {
@@ -10,6 +10,12 @@ const registerUser = async (req, res) => {
     }
     
     const { fullname, email, password} = req.body;
+
+    const isUserAlready  = await userModel.findOne({ email });
+
+    if(isUserAlready){
+        return res.status(400).json({ message: "User already exist" });
+    }
 
     const hashedPassword = await userModel.hashPassword(password);   //as it is statics not methods, thats why called with userModel not user like generateAuhToken() below.
 
