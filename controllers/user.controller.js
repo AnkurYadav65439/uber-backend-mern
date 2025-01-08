@@ -67,12 +67,11 @@ const getUserProfile = async(req, res) => {
 }
 
 const logoutUser = async(req, res) => {
-    res.clearCookie('token');
-
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-
+    
     await blacklistTokenModel.create({ token});     //still need to update authUser mw to detect blacklisted token as user can use it.
-
+    
+    res.clearCookie('token');
     res.status(200).json({ message: "Logged out"});
 }
 
